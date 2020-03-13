@@ -49,7 +49,7 @@ public class Broker  {
     public void atPrice(ToIntFunction<DepthOfMarket> paymentStrategy) {
         threadLocalScope.get().price(paymentStrategy.applyAsInt(mom));
 
-        addOrder(threadLocalScope.get().execute());
+        addOrder(threadLocalScope.get().build());
     }
 
     /**
@@ -57,9 +57,17 @@ public class Broker  {
      * @param price
      */
     public void atPrice(int price) {
-        addOrder(threadLocalScope.get().price(price).execute());
+        addOrder(threadLocalScope.get().price(price).build());
     }
 
+    /**
+     * Терминальный метод реализующий запуск логики отравки ордера через брокер
+     * @param price
+     */
+    public void atPrice(Currency price) {
+        Order.SellOrderBuilder builder = (Order.SellOrderBuilder)threadLocalScope.get();
+        addOrder(builder.price(price).build());
+    }
 
     /**
      * Набор мусорных методов!
@@ -70,7 +78,7 @@ public class Broker  {
      */
     @Deprecated
     public void atMarketPrice() {
-        addOrder(threadLocalScope.get().execute());
+        addOrder(threadLocalScope.get().build());
     }
 
     /**
@@ -78,7 +86,7 @@ public class Broker  {
      */
     @Deprecated
     public void whenPriceLowerThan(int price) {
-        addOrder(threadLocalScope.get().execute());
+        addOrder(threadLocalScope.get().build());
     }
 
     /**

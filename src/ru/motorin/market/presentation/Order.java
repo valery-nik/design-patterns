@@ -30,17 +30,17 @@ public class Order {
         return new Order(symbol, price, quantity, Direction.BUY);
     }
 
-    @Builder(builderClassName = "DefaultBuilder", builderMethodName = "full", buildMethodName = "execute")
+    @Builder(builderClassName = "DefaultBuilder", builderMethodName = "full", buildMethodName = "build")
     public static Order defaultBuilder(String symbol, Integer price, int quantity, Direction direction) {
         return new Order(symbol, price, quantity, direction);
     }
 
-    @Builder(builderClassName = "BuyOrderBuilder", builderMethodName = "buyOrder", buildMethodName = "execute")
+    @Builder(builderClassName = "BuyOrderBuilder", builderMethodName = "buyOrder", buildMethodName = "build")
     public static Order buyOrderBuilder(String symbol, Integer price, int quantity) {
         return new Order(symbol, price, quantity, Direction.BUY);
     }
 
-    @Builder(builderClassName = "SellOrderBuilder", builderMethodName = "sellOrder", buildMethodName = "execute")
+    @Builder(builderClassName = "SellOrderBuilder", builderMethodName = "sellOrder", buildMethodName = "build")
     public static Order sellOrderBuilder(String symbol, Integer price, int quantity) {
         return new Order(symbol, price, quantity, Direction.SELL);
     }
@@ -51,11 +51,11 @@ public class Order {
             // Validate.notBlank(super.name, "Order SYMBOL cannot be null or empty!");
             // Validate.notBlank(super.QUANTITY, "Order QUANTITY cannot be null or empty!");
             // Validate.notBlank(super.DIRECTION, "Order DIRECTION cannot be null or empty!");
-            broker.addOrder(this.execute());
+            broker.addOrder(this.build());
         }
 
-        public DefaultBuilder price(Currency currencedQuontity) {
-            this.price = currencedQuontity.getAmount();
+        public BuyOrderBuilder price(Currency currencedQuontity) {
+            this.price(currencedQuontity.getAmount());
             return this;
         }
     }
@@ -66,11 +66,11 @@ public class Order {
             // Validate.notBlank(super.name, "Order SYMBOL cannot be null or empty!");
             // Validate.notBlank(super.QUANTITY, "Order QUANTITY cannot be null or empty!");
             // Validate.notBlank(super.DIRECTION, "Order DIRECTION cannot be null or empty!");
-            broker.addOrder(this.execute());
+            broker.addOrder(this.build());
         }
 
         public SellOrderBuilder price(Currency currencedQuontity) {
-            this.price = currencedQuontity.getAmount();
+            this.price(currencedQuontity.getAmount());
             return this;
         }
     }

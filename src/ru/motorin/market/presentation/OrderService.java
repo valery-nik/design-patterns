@@ -6,23 +6,31 @@ import java.util.stream.Stream;
 import static ru.motorin.market.presentation.Currency.EUR;
 import static ru.motorin.market.presentation.Order.Direction.BUY;
 
+/**
+ * Код и его эволюция улучшений как на митапе.
+ */
 public class OrderService {
     public String sberBankEquity() {
         return "SBER";
     }
 
+    /**
+     * Доселе стандартный процедурный иммеративный стиль.
+     * @param broker
+     */
     public void createOrder(Broker broker) {
-        ru.motorin.market.presentation.Order order = new Order(); // !!!
+        ru.motorin.market.presentation.Order order = new Order(); // !!! В пустом конструкторе мало смысловой нагрузки
         order.setSymbol(sberBankEquity());
-        order.setPrice(87); // !!!
-        order.setQuantity(10); // !!!
+        order.setPrice(87); // !!! Плохо читать голые цифры Primitive Obsession
+        order.setQuantity(10); // !!! Плохо читать голые цифры Primitive Obsession
         order.setDirection(BUY);
 
         broker.addOrder(order);
     }
 
     /**
-     * Переход на immutable доменный объект
+     * Улучшение 1: Переход на immutable доменный объект
+     * Минус: можно перепутать местами 87 и 10
      */
     public void createOrder2(Broker broker) {
         Order order = new Order(sberBankEquity(), 87, 10, BUY);
@@ -31,14 +39,19 @@ public class OrderService {
     }
 
     /**
-     * Инициализация через информативный фабричный метод (уход от ноунейм конструктора)
+     * Улучшение 2: Инициализация через информативный фабричный метод (уход от ноунейм конструктора),
+     * енумы заменили на buy и sell
+     *
+     * Минус: можно перепутать местами 87 и 10
      */
     public void createOrder3(Broker broker) {
         broker.addOrder(ru.motorin.market.presentation.Order.buy(sberBankEquity(), 87, 10));
     }
 
     /**
-     * Переход на именнованную инициализацию полей через builder (fluent api)
+     * Улучшение 3: Переход на именнованную инициализацию полей через builder (fluent api)
+     *
+     * Убрали минус: можно перепутать местами 87 и 10
      */
     public void createOrder4(Broker broker) {
         broker.addOrder(Order.buyOrder()
@@ -47,6 +60,10 @@ public class OrderService {
                 .build());
     }
 
+    /**
+     *  Улучшение 3.1: Добавили единицы измерения валюты. Пофиксили Primitive Obsession
+     * @param broker
+     */
     public void createOrder4_1(Broker broker) {
         broker.addOrder(Order.buyOrder()
                 .price(EUR(87))
@@ -60,20 +77,19 @@ public class OrderService {
      *   в Order.sendTo или в Broker.atPrice
      */
     public void createOrder5(Broker broker) {
-
         // Уход от необходимости вызова метода build
         Order.sellOrder()
+                .price(EUR(87))
+                //  .price(87)
                 .symbol(sberBankEquity())
                 .quantity(10)
-                .price(EUR(87))
-              //  .price(87)
-                .sendTo(broker);
+                .sendTo(broker); // ломбоком не получается
 
         // или так
         broker.buyOrder()
                 .symbol(sberBankEquity())
                 .quantity(10)
-                .atPrice(87);
+                .atPrice(EUR(87));
 
     }
 
